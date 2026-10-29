@@ -1,0 +1,24 @@
+name: Verify policy kit
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate source policy
+        run: python3 tooling/validate.py
+      - name: Run unit and security tests
+        run: python3 -m unittest discover -s tests -v
+      - name: Validate generated example
+        run: python3 tooling/validate.py --config examples/nuxt-project/.agentic/project.yaml --generated examples/nuxt-project

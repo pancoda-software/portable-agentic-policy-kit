@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "project_name": "example-nuxt-project",
+  "profile": "nuxt-vue",
+  "output_language": "de",
+  "custom_notes": "Project configuration example; do not put secrets here. Edit this file before generating entrypoints."
+}
