@@ -55,7 +55,7 @@ flowchart TD
     BLOCK --> RECOVERY["Recovery / Eskalation"]
 ```
 
-Bei MEDIUM sind anwendbare Tests und statische Prüfungen erforderlich. Bei HIGH zusätzlich erweiterte Verifikation und separate Freigaben für riskante Operationen. `agent-verify.sh` führt nur ausgewählte Checks aus und kann nicht alle Aufgabenrisiken automatisch bewerten.
+Bei MEDIUM sind anwendbare Tests und statische Prüfungen erforderlich. Bei HIGH zusätzlich erweiterte Verifikation und separate Freigaben für riskante Operationen. Welche Prüfkommandos existieren, bestimmt ausschließlich das Zielprojekt.
 
 ## D. Fehlerbehebung mit begrenztem Retry-Budget
 

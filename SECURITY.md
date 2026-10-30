@@ -1,34 +1,20 @@
-# Security model and limits
+# Sicherheitsmodell und Grenzen
 
-This is a **policy distribution and validation kit**, not an agent harness or OS sandbox.
+Dieses Repository enthält **nur Markdown-Regeln**, keine technische Sandbox, keinen Installer und keinen ausführbaren Security-Controller.
 
-## Trust boundary
+1. **Anweisung ist keine Berechtigung:** `AGENTS.md` autorisiert keine Shell-, Netzwerk-, Git- oder Dateiaktionen. Host-Sandbox, Betriebssystemrechte und Approval-Dialoge müssen selbstständig greifen.
+2. **Risk-based autonomy:** Nur der vom Nutzer freigegebene Scope darf autonom bearbeitet werden; Push/Merge, gefährliche Git-Aktionen, Installationen, neue Kosten, Produktionswirkung und Zugriffe außerhalb des Scopes brauchen weitere Genehmigungen.
+3. **Sensible Daten:** Keine echten Credentials in Projektanweisungen oder Logs kopieren. Repository-Inhalte und externe Skills können Prompt-Injection enthalten und dürfen Sicherheitsregeln nicht überschreiben.
+4. **Qualität:** Tests, Typprüfungen, Lint und Builds müssen aus dem vorhandenen Projekt abgeleitet werden. Ein ungetesteter Fix ist nicht verifiziert. Die Policy erzwingt keine Tests automatisch.
+5. **Ollama:** Ein lokales Modell kann selbst keine Tool-Allowlist, Rechtegrenze oder zuverlässige Sitzungszustände garantieren. Der Harness muss Aufrufe kontrollieren.
+6. **Bestehende Dateien:** Niemals eine projekt-eigene `AGENTS.md`/`CLAUDE.md` ohne Sichtprüfung ersetzen. Konflikte manuell auflösen.
+7. **Public-Release:** Bereits vorhandene Git-Commits enthalten personenbezogene Autorenmetadaten. Vor einem Wechsel zu `public` ist eine gesonderte Überprüfung und Entscheidung notwendig; ältere Commits werden durch das Entfernen aktueller Dateien nicht unsichtbar.
 
-1. User-authorized scope is narrower than process filesystem privileges.
-2. Agent instructions may be ignored, overridden by lower-quality models, or attacked through untrusted codebase content.
-3. Native approval/sandbox/OS restrictions are therefore mandatory for autonomous high-risk operations.
-4. A valid `AGENTS.md`/`CLAUDE.md`/Ollama prompt proves only that a file was generated; it does not prove the runtime loaded or obeys it.
-5. Skill descriptions are third-party content: examine provenance, code, update behavior and tool permissions before installation.
+## Manuelle Smoke-Tests (nur in Testprojekt ohne echte Secrets)
 
-## Recommended smoke tests on each target host
+- Agenten nach geladenen Regeln fragen und mit `AGENTS.md` abgleichen.
+- Einen nicht autorisierten Schreib-/Push-Versuch in einer isolierten Testumgebung prüfen: Er muss blockiert sein oder eine Freigabe verlangen.
+- Einen bekannten Testfehler auslösen; sicherstellen, dass kein autonomer Erfolg/Commit behauptet wird.
+- Prüfen, ob Änderungen außerhalb eines angenommenen Scopes an die Nutzerfreigabe zurückgeführt werden.
 
-- Ask the agent to report the loaded policy version **without** supplying its contents; verify version and decisions from real loaded instructions.
-- Attempt a write outside the approved project in a disposable sandbox: it should be rejected or require user approval.
-- Attempt reading a harmless fake `.env` secret: the runtime should block or refuse it. Do NOT test with real credentials.
-- Try an unauthorized push/dependency install against a fake/local test repository: it should require explicit approval.
-- In a disposable repository, verify relevant tests must pass before any local commit.
-- For Ollama, confirm tool-call admission controls run **outside** the model process, and retry state persists across tool invocations.
-
-## Known gaps in V1
-
-- `agent-verify.sh` does NOT enforce an operating-system sandbox, Git write permissions, push protection, or task scope.
-- It does not examine untracked file content and does not fully detect obfuscated, encrypted or novel secrets. Use dedicated scanning and review in real projects.
-- Project-provided check commands are arbitrary executables; `--allow-checks` signals explicit prior review, not a security guarantee.
-- Existing test failures require separate pre-change reproduction; no automatic baseline adjudication is implemented.
-- `tooling/validate.py` verifies static consistency and optionally common local skill paths. It does not prove remote repository availability, model competence, tool enforcement or installed versions.
-- Retry budgets and sub-agent parallelism are specified as normative policy, not mechanically enforced by this kit. Hard enforcement needs an external trusted controller.
-- `AGENTS.md` and `CLAUDE.md` loading behavior varies with runtime release and workspace settings; inspect actual injected instructions.
-
-## Safe use
-
-Use read-only and disposable workspaces for initial evaluation. Keep credentials outside the agent's accessible tree. Do not weaken the sandbox or allow network/production access in order to satisfy a policy instruction. Report bugs through your trusted repository issue workflow after removing secrets.
+**Hinweis:** Ein bestandenes Smoke-Test-Szenario ist kein formaler Sicherheitsnachweis. Siehe [Sicherheits- und Qualitätskapitel](docs/05-sicherheit-qualitaet.md).

@@ -45,7 +45,7 @@ flowchart TD
     G --> H["Hash + Rapport"]
 ```
 
-`templates/agent-verify.sh` liefert nur ergänzende Prüfungen. Der Secret-Scan ist heuristisch und erfasst untracked Inhalte nicht vollständig. Bei tatsächlichen Geheimnissen im Repository sind dedizierte Scanner und organisatorische Kontrollen nötig.
+Welche Prüfbefehle und Secret-Scanner verwendet werden, bestimmt das Zielprojekt. Die Markdown-Policy enthält selbst keinen Scanner und führt keinen Test aus.
 
 ## Angehaltene Aufgaben sind nicht automatisch Rückbauten
 
@@ -61,14 +61,13 @@ Im Fehlerfall dürfen Agenten **nicht** automatisch User-Änderungen löschen od
 | Dependency-Lifecycle-Skript mit Netzwerkaktion | Skript vor neuer Ausführung prüfen; ASK-Netzwerkpolitik |
 | Sub-Agent arbeitet außerhalb Scope | Eigene enge Datei- und Permission-Grenzen |
 | Endloses Debugging | 2+1 Fix-Limit, global 6, externer persistenter Counter empfohlen |
-| Fehlerhafte Policy-Datei | Canonical Render + Drift-Validator + CI |
+| Widersprüchliche Policy-Dateien | Manuelle Diff-/Link-Prüfung und gezieltes Review |
 
-## Wichtige V1-Einschränkungen
+## Grenzen der Markdown Edition
 
-- Der Generator konfiguriert keine OS-/Container-Sandbox und keine Authentifizierung bei GitHub.
-- Der Validator beweist nur Struktur, Policy-Invarianten und generierten Dateigleichstand; nicht Modellgehorsam.
-- `agent-verify.sh` ist ein frameworkneutraler Zusatzcheck. Tests/Build/Lint werden nicht automatisch erkannt; für MEDIUM/HIGH ist ein explizit konfigurierter Testbefehl und dessen Ausführungsfreigabe erforderlich.
-- Automatische Budget-Durchsetzung über mehrere Modelle und Sessions verlangt einen externen Controller.
-- Berechtigungsmechanismen der Runtime müssen selbst geprüft werden, bevor autonome Operationen erlaubt werden.
+- Keine automatische OS-/Container-Sandbox, Authentifizierung, Testausführung oder Secret-Prüfung.
+- Keine automatische Synchronisierung über Projekte hinweg: Updates durch manuelle Diff-Prüfung.
+- Runtime-Rechte, persistente Retry-Zähler und Sub-Agent-Limits müssen gegebenenfalls extern erzwungen werden.
+- Nicht jede Runtime lädt `AGENTS.md` oder `CLAUDE.md` automatisch; das tatsächliche Laden ist gesondert zu prüfen.
 
 Siehe auch [`SECURITY.md`](../SECURITY.md).

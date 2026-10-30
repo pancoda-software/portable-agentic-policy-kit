@@ -1,7 +1,7 @@
-# Universal Agentic Coding Policy
+# AGENTS.md – Universal Agentic Coding Guidelines
 
-> Source of truth for D-01–D-11. **Normative** for all runtimes, unless a stricter host-level rule applies.
-> Instructions do NOT themselves grant shell, network, repository or filesystem permissions.
+> **Version 2.0.0 – Markdown-only.** Universelle Leitlinien aus D-01 bis D-11. Es gilt stets zusätzlich die restriktivere Host-/Projekt-Sicherheitsregel.
+> Diese Datei gewährt selbst weder Datei-, Shell-, Netzwerk-, Git- noch Modellberechtigungen.
 
 ## 1 · Response, ideation and planning
 
@@ -34,7 +34,7 @@
 
 ## 5 · D-04/D-04a Runtime and provider independence
 
-- Primary workflow: Claude Desktop Code tab on macOS/Linux; **this is not a portability limit**. Compatible targets include Claude Code, Codex, and Ollama with an actual agent harness.
+- Runtime-independent: use these rules in Claude Code, Codex, or another compatible coding-agent harness (including one backed by Ollama). No provider, operating system, programming language or framework is required.
 - Distinguish model, inference provider and tool-running agent harness. Ollama model inference alone cannot enforce shell permissions, approvals, retries or Git policy.
 - Detect supported abilities at the start of relevant coding work or when configuration changes; do not probe every tiny question. Be explicit about unavailable capabilities.
 - Optimize subscription quota, metered API cost or local compute/latency as appropriate. Never switch to a paid provider, enable extra usage, or incur new charges without authorization.
@@ -48,7 +48,7 @@
 
 ## 7 · D-06 Tiered skills
 
-- Per task, assign **REQUIRED** (task explicitly mandates skill), **PREFERRED** (use when relevant/available), or **OPTIONAL** (use only with net benefit). Use the registry as a discovery hint, not proof of local installation.
+- Per task, assign **REQUIRED** (task explicitly mandates skill), **PREFERRED** (use when relevant/available), or **OPTIONAL** (use only with net benefit). Treat named skills from a task or project as discovery hints, not proof of local installation.
 - Check a relevant skill and any dependencies lazily; read and assess third-party instructions before executing commands/scripts. Never auto-install/update a skill or a dependency without approval.
 - If REQUIRED is unavailable, block only the dependent operation and provide a *verified* installation path. For PREFERRED, use a capable native fallback and report meaningful differences; skip OPTIONAL.
 - Do not pretend a missing skill ran. No skill may override the core scope, security, Git or spending policy.
@@ -79,11 +79,14 @@
 - Native sandbox, OS controls, allowlists and approval prompts are the enforcement layer; prompt instructions alone are not a security boundary. If a high-risk operation cannot be technically constrained, fail closed.
 - Account for indirect effects: package lifecycle scripts, shell wrappers, CI hooks, containers/sockets and scripts launched by apparently safe commands.
 
-## 11 · D-10/D-11 Three-layer delivery
+## 11 · D-10/D-11 Markdown-first delivery
 
-- One canonical universal core; runtime adapters contain only integration mechanisms; any technology-specific rules belong solely to user-owned project instructions outside managed blocks. Apply the most restrictive applicable rule.
-- Do not choose, infer, prescribe or promote a particular framework, programming language, UI library, database or testing tool. Respect the existing project and use its declared commands only after review. Generate portable entry points from canonical sources; do not manually maintain divergent copies. Explicitly verify instructions are loaded by the target runtime.
-- Keep configuration and validators versioned, inspectable and deterministic. Neither the validator nor a policy document replaces a sandbox or a real integration test.
+- This `AGENTS.md` is the complete, canonical project-level policy. Do not require Python, a generator, validator, installer, skill manager or framework-specific configuration to use it.
+- `CLAUDE.md` may contain the single import directive `@AGENTS.md` when the target Claude Code runtime supports and loads it. Other harnesses must explicitly inject these instructions; an Ollama model by itself does not load repository files.
+- Layer 1: universal agent behavior (this file). Layer 2: runtime loading and technical permissions. Layer 3: project-owned conventions, implementation commands and architecture. Apply the most restrictive applicable rule.
+- Do not choose, infer, prescribe or promote any programming language, framework, UI library, database, state manager or test runner.
+- If an existing project already has an `AGENTS.md` or `CLAUDE.md`, preserve it and **manually reconcile** these rules instead of overwriting. Never silently replace project instructions.
+- Documentation and diagrams may be consulted as needed. Their existence does not imply that a runtime auto-loads them. Explicitly verify the effective agent instructions.
 
 ## 12 · Completion contract
 

@@ -23,5 +23,5 @@ Ein Umschreiben der Historie verändert Commit-Hashes und erfordert Koordination
 ## Technische Veröffentlichung
 
 - Nach erfolgreicher Prüfung die Sichtbarkeit über GitHub Repository Settings ändern (Admin-Berechtigung erforderlich).
-- Danach Installation auf einem frischen Rechner ohne GitHub-Authentifizierung mit dem dokumentierten Bootstrap testen.
+- Danach auf einem frischen Rechner ohne GitHub-Authentifizierung die beiden Markdown-Dateien herunterladen, in ein Testprojekt kopieren und die tatsächliche Runtime-Einbindung prüfen.
 - Die Aussage „keine personenbezogenen Daten“ ist ein Prüfziel und kein automatischer Sicherheitsnachweis.

@@ -1,49 +1,39 @@
 # 07 – Troubleshooting und FAQ
 
-## `validate.py` meldet „Drift detected“
+## Agenten ignorieren die Guidelines
 
-Generierte `AGENTS.md`, `CLAUDE.md` oder `ollama-system.txt` unterscheiden sich von der kanonischen Vorlage. Manuelle Änderungen nicht blind überschreiben. Erst Diff ansehen und entscheiden, ob die Änderung in die Core-Policy oder die eigenen Projektanweisungen gehört. Anschließend einen **neuen Ausgabeordner** rendern; `--force` nur auf zweifelsfrei vom Generator erzeugte Dateien anwenden.
+Prüfe Dateiname und Ort (`AGENTS.md` in der Projektwurzel, `CLAUDE.md` für Claude Code). Stelle sicher, dass die konkrete Runtime die Instructions wirklich lädt. Veraltete oder konkurrierende globale/Unterverzeichnis-Regeln können eine andere Wirkung haben. **Datei vorhanden** heißt nicht automatisch **Datei geladen**.
 
-## `render.py` verweigert eine Dateiüberschreibung
+## Im Projekt existiert bereits eine AGENTS.md oder CLAUDE.md
 
-Erwartetes Sicherheitsverhalten. Vorhandene projektbezogene Instructions könnten User-Regeln enthalten. Ausgabeordner wechseln oder nach manueller Prüfung die geeigneten Teile zusammenführen. Symlink-Schutz nicht umgehen.
+**Nicht überschreiben.** Bestehende Anweisungen bewahren, neue universelle Regeln mit einem Diff vergleichen und bewusst integrieren. Falls beide Dateien Regeln enthalten, Dopplungen und Widersprüche auflösen. Sicherheitsregeln dürfen nicht unbeabsichtigt abgeschwächt werden.
 
-## Claude Code / Codex ignoriert Regeln
+## Claude Code interpretiert @AGENTS.md nicht
 
-Prüfen, ob der jeweilige Entry-Point am korrekten Ort liegt, ob `@AGENTS.md` erfolgreich importiert wird und ob andere Projekt-/globale Regeln Vorrang haben. Die **tatsächlich geladenen** Instruktionen mit einem Smoke-Test abgleichen. Die bloße Existenz einer Datei beweist nichts.
+Prüfe die tatsächliche Version und Import-Unterstützung. Wenn der Import nicht funktioniert, die universellen Regeln manuell in eine von Claude tatsächlich geladene Instruktionsdatei übernehmen. Nicht behaupten, der Import sei aktiv, ohne ihn zu testen.
 
-## Lokales Ollama-Modell verweigert Tool Calling oder halluziniert Erfolg
+## Ollama beachtet die Policy nicht
 
-Modelle unterscheiden sich stark in Tool-Unterstützung, Kontextgrenzen und Instruktionsbefolgung. Den Harness mit read-only Tools testen, kleinere Aufgaben wählen oder ein nachweislich geeigneteres Modell einsetzen. Sicherheit immer außerhalb des Modells erzwingen. **Nicht** stillschweigend eine kostenpflichtige API benutzen.
+Ollama führt primär Modellschnittstellen aus. Ein Agent-Harness muss `AGENTS.md` aktiv als Instruktion übergeben. Tool Calling und Berechtigungsgrenzen müssen ebenfalls im Harness umgesetzt sein.
 
-## Ein benötigter Skill wird nicht erkannt
+## Der Agent darf keine lokalen Commits machen
 
-`python3 tooling/validate.py --check-skills --project /pfad/zum/repo` ausführen. Installationsort und `SKILL.md`-Namenskonvention prüfen. Bei REQUIRED den abhängigen Task stoppen. PREFERRED kann durch einen transparenten nativen Fallback ersetzt werden. Der Validator belegt weder Skill-Sicherheit noch Funktionsfähigkeit.
+Prüfe, ob `.git` in der Runtime-Sandbox beschreibbar ist und ob die Quality Gates erfolgreich sind. Keine Sandbox eigenmächtig deaktivieren; gegebenenfalls separate Berechtigung einholen oder die Änderung uncommitted übergeben.
 
-## Warum kann Codex keinen lokalen Commit erzeugen?
+## Ein Skill fehlt
 
-In manchen Sandbox-Einstellungen ist `.git` nicht beschreibbar. Der Agent darf das nicht durch pauschale Deaktivierung der Sandbox umgehen. Einen dedizierten, genehmigten Commit-Pfad verwenden oder die Änderung uncommitted übergeben und um Berechtigungsfreigabe bitten.
+Nur ein für den konkreten Auftrag REQUIRED-Skill blockiert die abhängige Operation. Für PREFERRED sind transparente Fallbacks erlaubt; OPTIONAL kann entfallen. Ein fehlender Skill wird nicht simuliert.
 
-## `agent-verify.sh` meldet fehlende Tests
+## Tests sind schon vor der Änderung fehlgeschlagen
 
-Bei MEDIUM/HIGH benötigt die frameworkunabhängige Vorlage einen in `.agentic/checks.json` definierten `test`-Befehl. Fehlt er oder wurde seine Ausführung nicht mit `--allow-checks` freigegeben, ist das Gate FAIL/UNAVAILABLE. Prüfe Projektbefehle und ihre Seiteneffekte vor der Freigabe.
+Baseline und Fehlersymptom reproduzierbar vergleichen. Vorbestehende Fehler dürfen nur mit Belegen ausgenommen werden. Neue Regressionen blockieren autonome Commits.
 
-## Was passiert bei bereits roten Tests?
+## Wie aktualisiere ich die Policy in mehreren Projekten?
 
-Ein Vorher-nachher-Vergleich muss belegen, dass derselbe Fehler schon vorher auftrat und nicht schlimmer wurde. Falls eine Baseline nicht reproduzierbar ist, ist die autonome Commit-Freigabe auszusetzen oder eine ausdrücklich genehmigte Alternative zu wählen.
+Neue `AGENTS.md` mit jeder projekt-eigenen Version vergleichen und Änderungen gezielt übernehmen. Eine vorhandene `CLAUDE.md` nicht erneut überschreiben. Wer eine automatisierte zentrale Verteilung braucht, kann **separates eigenes Tooling** ergänzen – es ist kein Bestandteil dieses Markdown-Kits.
 
-## Darf der Agent automatisch einen Pull Request erstellen?
+## Warum gibt es keine Validator-/Installationsbefehle mehr?
 
-D-02 erlaubt lokale Commits, aber ein Remote Push bzw. Merge benötigt eine konkrete Freigabe. Die Erstellung eines Remote Pull Requests oder das Hochladen eines Branches ist daher **nicht automatisch** von der initialen Coding-Freigabe gedeckt. Ein spezifisches Go für das Repository/den Branch kann die Remote-Aktion autorisieren, ohne andere Grenzen aufzuheben.
+Die ursprüngliche Aufgabe war ein **kopierbares Regelwerk**. Python-Installer, Test-Runner und Generatoren waren zusätzlicher Wartungsaufwand ohne unmittelbaren Nutzen für diesen Zweck. Das Kit besteht deshalb ausschließlich aus Markdown.
 
-## Warum sind die Retry-Limits nicht vom Validator erzwungen?
-
-`validate.py` prüft die **existierenden Policy-Defaults**, nicht die dynamische Tool-Nutzung. Eine harte Zählung über Sub-Agenten, Kontextkompression oder Session-Neustarts verlangt einen externen vertrauenswürdigen State-Store und Controller. Die V1 deklariert diese Anforderung offen.
-
-## Wo beginne ich?
-
-1. [`README.md`](../README.md) lesen und Tests ausführen.
-2. [`docs/01-architektur.md`](01-architektur.md) und [`docs/02-workflows.md`](02-workflows.md) betrachten.
-3. Universelle Policy in einen neuen Ordner rendern oder mit `install.py` direkt integrieren.
-4. Laufzeitspezifische Sicherheitsmechanismen auf dem Zielsystem konfigurieren.
-5. In einem Wegwerf-Repository die Smoke-Tests aus [`03-runtime-integration.md`](03-runtime-integration.md) durchführen.
+Beginne mit [README](../README.md), [Kopieranleitung](09-dateien-kopieren.md) und [Workflows](02-workflows.md).

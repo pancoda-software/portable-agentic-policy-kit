@@ -1,100 +1,61 @@
-# 03 – Runtime-Integration: Claude Code, Codex und Ollama
+# 03 – Runtime-Integration: Claude Code, Codex, Ollama
 
-## Schnellinstallation (empfohlen)
-
-Ein einzelner Befehl genügt, wenn das Kit bereits geklont wurde: `python3 /pfad/zum/kit/tooling/install.py --project .`. Neu: `--new projektname`. Detaillierte Varianten (privates GitHub-Repo, späterer Public-Bootstrap und Updates) stehen in [Einfach installieren](09-einfach-installieren.md). Die darunter beschriebene Render-/Copy-Methode bleibt als manueller Expertenworkflow verfügbar.
-
-## Erstinstallation und Workflow
-
-```bash
-python3 --version                    # Python >= 3.10
-python3 tooling/validate.py
-python3 -m unittest discover -s tests -v
-python3 tooling/render.py --config templates/project.yaml --out ./dist/example
-python3 tooling/validate.py --config templates/project.yaml --generated ./dist/example
-```
-
-**Wichtig:** `render.py` installiert nichts im Home-Verzeichnis und überschreibt ohne explizites `--force` keine Dateien. Selbst mit `--force` dürfen nur zuvor generierte Dateien ersetzt werden; Symlink-Ziele werden abgelehnt.
-
-## Einbindungsvarianten
+**Keine Installation notwendig.** Kopiere `AGENTS.md` und bei Claude Code zusätzlich `CLAUDE.md` in ein beliebiges Projekt. Bei gleichnamigen Dateien vorher Inhalte vergleichen und manuell zusammenführen.
 
 ```mermaid
 flowchart LR
-    CORE["core + runtime adapter"] --> RENDER["render.py"]
-    RENDER --> A["AGENTS.md"]
-    RENDER --> C["CLAUDE.md"]
-    RENDER --> O["ollama-system.txt"]
-    A --> CODEX["Codex Instruktionen"]
-    C --> CC["Claude Code Instruktionen"]
-    O --> H["Agent-Harness"]
-    H --> MODEL["Ollama Modell"]
+    A["AGENTS.md"] --> CODEX["Codex"]
+    A --> CCFILE["CLAUDE.md: @AGENTS.md"]
+    CCFILE --> CLAUDE["Claude Code"]
+    A --> HARNESS["Agent-Harness lädt Text"]
+    HARNESS --> OLLAMA["Ollama-Modell"]
 ```
-
-## Claude Code / Claude Desktop Code-Tab
-
-1. Generierte `AGENTS.md` und `CLAUDE.md` nach Sichtprüfung in die Projektwurzel übernehmen.
-2. Die generierte `CLAUDE.md` bindet `@AGENTS.md` ein. Das Verhalten hängt von Version und Workspace-Konfiguration ab; mit einem einfachen Smoke-Test überprüfen, ob die Policy geladen wird.
-3. Native Permissions, Hook-Skripte, Sandbox und optionale Sub-Agent-Definitionen gesondert konfigurieren. Die Markdown-Datei ist **keine Tool-Allowlist**.
-4. Lokale Commits nur nach relevanten Quality Gates. Für Push und Merge separate Freigabe.
-
-Für macOS und Linux dieselben Policy-Dateien verwenden; projekt-eigene Befehle bleiben ausdrücklich außerhalb der Policy.
 
 ## Codex
 
-1. Generierte `AGENTS.md` in das Repository übernehmen.
-2. Eine restriktive Sandbox und Genehmigungslogik nutzen, zum Beispiel:
+- Die Datei `AGENTS.md` in der Projektwurzel ablegen oder in bestehende Projektinstruktionen integrieren.
+- Die effektive Instruktionshierarchie und allfällige überschreibende Dateien prüfen.
+- Toolrechte, Sandbox und Approval-Policy werden **nicht** durch `AGENTS.md` konfiguriert. Verwende die jeweils verfügbaren Runtime-Einstellungen.
+- Verifizieren: Agenten nach der geltenden D-01-Freigaberegel und D-09-Sicherheitsregel fragen, ohne sie im Auftrag erneut zu zitieren.
 
-```toml
-sandbox_mode = "workspace-write"
-approval_policy = "on-request"
-```
+## Claude Code / Claude Desktop Code-Tab
 
-3. Je nach Sandbox sind `.git`-Schreiboperationen geschützt. Lokale Commits nur über einen zulässigen, separat autorisierten Mechanismus ausführen; **nicht** pauschal die Sandbox deaktivieren.
-4. Bei Überschreibungen oder abweichenden `AGENTS.md`-Regeln die effektiven Instruktionen prüfen, statt ihre erfolgreiche Ladung anzunehmen.
+- `AGENTS.md` und `CLAUDE.md` in die Projektwurzel kopieren.
+- Die mitgelieferte `CLAUDE.md` enthält lediglich `@AGENTS.md` als Claude-Code-Import. Prüfe, ob deine Runtime den Import tatsächlich unterstützt und ausführt.
+- Gibt es bereits eine `CLAUDE.md`, **nicht überschreiben**: nach Sichtprüfung `@AGENTS.md` dort ergänzen oder die gemeinsamen Regeln manuell integrieren.
+- Permissions, Hooks und Sandbox verbleiben in den Runtime-Einstellungen. Ein Import erteilt keine Git- oder Shell-Rechte.
 
-## Ollama + Agent-Harness
+## Ollama und andere lokale Modelle
 
-Ollama betreibt das Modell, nicht automatisch den Coding-Agenten. Das Kit enthält `ollama-system.txt` als Instruktionsartefakt; die tatsächliche Ausführung verantwortet ein separater Harness.
+Ollama selbst führt keine Projekt-Tools aus und liest `AGENTS.md` nicht automatisch. Nur ein **Agent-Harness**, der den Text lädt und Toolzugriffe kontrolliert, kann die Policy auf Coding-Aufgaben anwenden.
 
 ```mermaid
 sequenceDiagram
-    participant User
-    participant Harness as Trusted Harness
-    participant Model as Ollama LLM
-    participant Tools as Restricted Tools
-    User->>Harness: Auftrag + Scope
-    Harness->>Model: System Policy + Task + Tool-Schema
-    Model-->>Harness: Vorschlag eines Tool-Calls
-    Harness->>Harness: Scope, Policy, Budget, Sandbox prüfen
-    alt Aktion zulässig
-      Harness->>Tools: eingeschränkter Aufruf
-      Tools-->>Harness: Ergebnis
-      Harness-->>Model: bereinigtes Resultat
-    else Aktion blockiert
-      Harness-->>Model: Denial / Approval erforderlich
+    actor User
+    participant H as Agent-Harness
+    participant M as Lokales Modell
+    participant T as Eingeschränkte Tools
+    User->>H: Auftrag + freigegebener Scope
+    H->>M: System-Instruktionen aus AGENTS.md
+    M-->>H: Toolvorschlag
+    H->>H: Approval + Sandbox + Budget prüfen
+    alt erlaubt
+      H->>T: Aufruf
+      T-->>H: Ergebnis
+      H-->>M: Tool-Ergebnis
+    else nicht erlaubt
+      H-->>M: Abgelehnt / Freigabe nötig
     end
-    Harness-->>User: Evidenz + Abschlussbericht
+    H-->>User: Status + Evidenz
 ```
 
-Der Harness muss die Anforderungen aus [`adapters/ollama/harness-contract.md`](../adapters/ollama/harness-contract.md) erfüllen: Aufruf-Admission **außerhalb** des Modells, Tool-Isolation, Approval, geteiltes Retry-Budget und Audit. Wenn das nicht möglich ist, nur read-only evaluieren und Schreibzugriffe deaktivieren.
+## Was immer separat erforderlich bleibt
 
-### Beispiel für einen Modelltest (nur lokal, ohne echte Secrets)
+1. Projekt-eigene Test-/Build-Kommandos, soweit vorhanden.
+2. Tatsächlich konfigurierte Datei-, Netzwerk- und Git-Rechte.
+3. Bereitgestellte Sub-Agenten-/Modellwahlfunktion, falls gewünscht.
+4. Sichere Freigaben bei Hochrisiko-Aktionen.
 
-- **Tool Calling:** Kann das Modell ein Schema korrekt befüllen und Tool-Antworten verwenden?
-- **Context:** Kann es eine begrenzte Projektdatei zusammen mit Scope und Akzeptanzkriterien verarbeiten?
-- **Security:** Verweigert der Harness unauthorisierte Pfade tatsächlich, auch wenn das Modell einen Aufruf versucht?
-- **Quality:** Erkennt der Agent fehlgeschlagene Tests, statt den Commit freizugeben?
+**Smoke-Test:** Die Laufzeit soll den Inhalt der tatsächlich geladenen Policy korrekt wiedergeben. Zusätzlich in einem ungefährlichen Testprojekt prüfen, dass externe Schreib-/Push-Aktionen nicht ohne Freigabe ausgeführt werden. Kein Smoke-Test mit realen Zugangsdaten.
 
-## Skill-Discovery
-
-`python3 tooling/validate.py --check-skills --project /pfad/zum/repo` prüft bekannte Skill-Verzeichnisse und meldet `FOUND` oder `NOT DETECTED`. Es prüft **nicht** Herkunft, Version oder Sicherheit des Skills. Nur aufgabenrelevante Skills laden und niemals ohne Freigabe installieren.
-
-## Smoke-Tests
-
-- Policy-Version und D-01/D-09-Regel aus tatsächlich geladenem Kontext abfragen; Antwort mit `policy/core.md` vergleichen.
-- In einer Wegwerf-Arbeitskopie einen harmlosen Schreibversuch außerhalb des Scopes auslösen; erwartet wird eine blockierte Aktion oder Freigabeaufforderung.
-- Ein falsches `.env`-Beispiel (kein echtes Secret) vor unerlaubtem Lesen schützen.
-- Push und Dependency-Installation in einem Testprojekt auf notwendige Freigaben prüfen.
-- Tests absichtlich fehlschlagen lassen und nachweisen, dass kein ungeprüfter lokaler Commit erfolgt.
-
-Weitere Grenzen in [`SECURITY.md`](../SECURITY.md).
+Weitere Anweisungen: [Dateien kopieren](09-dateien-kopieren.md) und [SECURITY.md](../SECURITY.md).

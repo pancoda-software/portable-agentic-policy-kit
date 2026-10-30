@@ -1,22 +1,15 @@
-# Contributing
+# Contributing – Markdown-first
 
-Dieses Repository enthält sicherheitsrelevante Agent-Instruktionen. Änderungen an `policy/core.md`, `policy/decisions.yaml` und Runtime-Berechtigungsregeln brauchen besonders sorgfältiges Review.
+Änderungen an dieser Policy sollten verständlich, rückwärtskompatibel und **frameworkunabhängig** bleiben.
 
-## Vorgehensweise
+1. **`AGENTS.md`** ist die einzige normative Quelle. Keine zweite vollständige Kopie der gleichen Regeln pflegen.
+2. `CLAUDE.md` bleibt ein knapper Import-Einstieg, soweit der verwendete Claude-Code-Client ihn unterstützt.
+3. Änderungen an Freigaben, Git, Security, Skill-Pflichten, Retry-Limits und Modell-Routing auf Auswirkungen prüfen.
+4. Betroffene Markdown-Erklärungen und Mermaid-Diagramme in `docs/` aktualisieren.
+5. Relative Links prüfen und Mermaid-Blöcke in GitHub-Vorschau sichten. Dokumentierte Verifikation von tatsächlichen Projekt-Tests unterscheiden.
+6. Keine persönlichen Daten, Kundendaten, Secrets oder Rechnerpfade einreichen.
+7. In Zielprojekten bestehende Instructions manuell zusammenführen; niemals automatisiert überschreiben.
 
-1. Motivation, Scope und Sicherheitsfolgen der Änderung dokumentieren.
-2. Kanonische Quellen statt der generierten Beispiel-Dateien bearbeiten.
-3. `python3 tooling/validate.py` und `python3 -m unittest discover -s tests -v` ausführen.
-4. Betroffene Beispiele mit `tooling/render.py` neu erzeugen; Drift prüfen.
-5. Bei Änderungen der Workflows die Mermaid-Diagramme und Beispiele in `docs/` aktualisieren.
-6. Atomaren Conventional Commit erstellen; Push und Merge nur im autorisierten Workflow.
+**Versionierung:** PATCH für Klarstellungen, MINOR für rückwärtskompatible Erweiterungen, MAJOR für Änderungen am Integrations- oder Sicherheitsvertrag. Lokale Conventional Commits sind sinnvoll; Remote-Aktionen bleiben nach den Rechten der jeweiligen Umgebung freigabepflichtig.
 
-## Versionskonvention
-
-- **PATCH:** Klarstellungen und nicht brechende Fehlerkorrekturen.
-- **MINOR:** Neue optionale Runtime-Adapter mit unveränderter Core-Sicherheitssemantik.
-- **MAJOR:** Änderungen an Policy-Invarianten, Freigaben oder deren Kompatibilitätsvertrag.
-
-## Grenzen
-
-Keine Secrets, Tokens oder echten `.env`-Dateien committen. Keine privaten Host-Details in Issues oder PRs veröffentlichen. Dieses Kit ersetzt keine Sandbox und kein Security-Audit eines Zielsystems.
+Keine Python-, Installer-, Build- oder Test-Runtime ist für dieses Repository erforderlich.

@@ -1,6 +1,6 @@
 # 06 – Entscheidungen aus der Grill-me-Session (D-01 bis D-11)
 
-Dieses Kapitel dokumentiert die Ergebnisse des gemeinsamen Interviews als **nachvollziehbare Entscheidungsakte**, nicht als vollständiges Gesprächsprotokoll. Es beschreibt die Motivation, verworfene Alternativen und technische Folgen. Normativ bleibt [`policy/core.md`](../policy/core.md); die maschinenlesbare Liste steht in [`policy/decisions.yaml`](../policy/decisions.yaml).
+Dieses Kapitel dokumentiert die Ergebnisse des gemeinsamen Interviews als **nachvollziehbare Entscheidungsakte**, nicht als vollständiges Gesprächsprotokoll. Es beschreibt die Motivation, verworfene Alternativen und technische Folgen. Normativ bleibt [`AGENTS.md`](../AGENTS.md). Die Entscheidungsakte ist bewusst reine Markdown-Dokumentation.
 
 ## Entscheidungsübersicht
 
@@ -17,7 +17,7 @@ Dieses Kapitel dokumentiert die Ergebnisse des gemeinsamen Interviews als **nach
 | D-08 | **B – Bounded Adaptive Recovery** | Endloses Debugging begrenzen | Zwei lokale, ein eskalierter Fix je Ursache |
 | D-09 | **B – Layered Security** | Policy alleine ist keine Sandbox | Permissions + technische Durchsetzung + Fail-Closed |
 | D-10 | **B – Three-Layer Architecture** | Portabilität bei minimaler Dopplung | Core + Runtime-Adapter + projekt-eigene Instructions |
-| D-11 | **B – Portable Policy Kit** | Nutzbares Paket ohne neues Agenten-Framework | Renderer, Validator, Vorlagen, Tests, Docs |
+| D-11 | **B – Portable Policy Kit**, vereinfacht zu Markdown-only | Verteilbares Regelwerk ohne zusätzliche Software | `AGENTS.md`, `CLAUDE.md`, Dokumentation und Diagramme |
 
 ## Was bewusst **nicht** beschlossen wurde
 
@@ -29,7 +29,7 @@ Dieses Kapitel dokumentiert die Ergebnisse des gemeinsamen Interviews als **nach
 - Kein automatischer Git Push oder Merge durch die Ausführungsfreigabe.
 - Keine Framework-/Sprachvorgaben: Technologieentscheidungen liegen ausschließlich beim Zielprojekt.
 
-## Sichere Defaults der V1
+## Sichere Defaults der Policy
 
 | Parameter | Wert | Status |
 |---|---:|---|
@@ -47,15 +47,18 @@ Die Defaults können nur durch eine bewusst dokumentierte, zulässige Änderung 
 
 ```mermaid
 flowchart LR
-    ORIG["Ursprünglicher Prompt\nstarre Regeln"] --> GRILL["11 Grill-me-Runden\nEntscheidungen D-01...D-11"]
-    GRILL --> CORE["Universal Core Policy"]
-    CORE --> AD["Runtime Adapter"]
-    CORE --> PR["Projekt-eigene Regeln"]
-    AD --> KIT["Versioniertes Policy Kit"]
-    PR --> KIT
-    KIT --> TEST["Validator + Tests + Review"]
+    ORIG["Ursprüngliche starre Custom Instructions"] --> GRILL["Grill-me: D-01 bis D-11"]
+    GRILL --> CORE["AGENTS.md · universelle Policy"]
+    CORE --> CLAUDE["CLAUDE.md · Import für Claude"]
+    CORE --> CODEX["Codex liest AGENTS.md"]
+    CORE --> HARNESS["Ollama-Agent-Harness lädt Policy"]
+    CORE --> DOCS["docs/ · Erklärung + Mermaid"]
 ```
+
+## Vereinfachung nach D-11
+
+Zunächst enthielt das Kit einen Python-Renderer, Installer und Validator. Der Nutzer hat die Zielsetzung anschließend konkretisiert: **Eine Sammlung von Markdown-Dateien zum Kopieren** genügt. Daher wurden in v2.0.0 alle ausführbaren Distributionsmechanismen entfernt. Die Sicherheits- und Agentic-Coding-Entscheidungen bleiben erhalten; die Verteilung erfolgt bewusst manuell.
 
 ## Weiterentwicklung und Nachvollziehbarkeit
 
-Bei einer Policy-Änderung zuerst die Entscheidung und deren Sicherheitsfolgen dokumentieren, dann `policy/core.md` und gegebenenfalls `policy/decisions.yaml` aktualisieren. Anschließend die generierten Dateien neu erzeugen, Tests laufen lassen und die Dokumentation anpassen. Änderungen an Freigaben sollten separat reviewt werden.
+Bei einer Änderung direkt `AGENTS.md` aktualisieren, Konflikte mit `CLAUDE.md` und den Docs prüfen, die Mermaid-Flows anpassen und die Änderung über Git versionieren. Zielprojekte aktualisieren ihre eigene Kopie per Diff und bewusstem Merge. Ein automatischer Installer ist nicht erforderlich.

@@ -82,15 +82,11 @@ failure_report:
 
 *Das Beispiel zeigt ein Datenformat, keinen realen Testlauf.*
 
-## Beispiel E – Projektspezifische Tests ohne Tool-Zwang
+## Beispiel E – Projekt-eigene Tests ohne vorgeschriebenes Tool
 
-In einem Zielprojekt kann optional eine `.agentic/checks.json` erstellt werden. Das Kit erkennt den Stack **nicht** und führt keine Befehle ungefragt aus.
+Die Policy fordert anwendbare Tests, aber **keinen bestimmten Test-Runner**. Der Agent liest die vorhandene Projektdokumentation und ermittelt den bereits verwendeten Testbefehl. Ist er nicht bekannt oder nicht sicher ausführbar, wird der Teststatus als `UNAVAILABLE` gemeldet – niemals als `PASS`.
 
-```json
-{"schema": 1, "checks": {"test": ["project-owned-test-command", "--flag"]}}
-```
-
-Nach expliziter Prüfung kann der Benutzer `bash .agentic/agent-verify.sh --risk medium --allow-checks` ausführen. Wird der Test nicht konfiguriert oder nicht genehmigt, wird der Check als nicht erfolgreich gemeldet.
+Der Agent darf keine neue Testbibliothek oder einen Paketmanager allein deshalb installieren, weil die Policy Tests verlangt.
 
 ## Beispiel F – Fehlender Skill
 

@@ -1,30 +1,30 @@
 # Dokumentation – Portable Agentic Policy Kit
 
-Diese Dokumentation beschreibt ausschließlich **framework- und sprachunabhängige Agentic-Coding-Guidelines**: Freigaben, adaptive Orchestrierung, Routing, Skills, Sicherheit, Quality Gates, Recovery und Git.
+Alle Inhalte sind **Markdown-Dateien**. Es gibt weder einen Installer noch Code, der vor der Nutzung ausgeführt werden muss.
 
 | Kapitel | Inhalt |
 |---|---|
-| [01 – Architektur](01-architektur.md) | Universelle Core-Policy, Runtime-Adapter und projekt-eigene Regeln |
-| [02 – Workflows](02-workflows.md) | End-to-End-Flows mit Mermaid-Diagrammen |
-| [03 – Runtime-Integration](03-runtime-integration.md) | Claude Code, Codex und Ollama-Harnesses |
-| [04 – Praxisbeispiele](04-praxisbeispiele.md) | Stackunabhängige Aufgaben und Fehlerfälle |
-| [05 – Sicherheit und Qualität](05-sicherheit-qualitaet.md) | Berechtigungen, testbare Gates und Grenzen |
-| [06 – Interviewentscheidungen](06-session-entscheidungen.md) | Beschlüsse D-01 bis D-11 |
-| [07 – Troubleshooting](07-troubleshooting.md) | Installation, Konflikte und Fehlerbehandlung |
-| [08 – Veröffentlichung](08-publication-checklist.md) | Datenschutz- und Historienprüfung vor Public |
-| [09 – Einfach installieren](09-einfach-installieren.md) | Ein-Befehl-Installation und Updates |
+| [01 – Architektur](01-architektur.md) | Universelle Policy, Runtime und projekt-eigene Regeln |
+| [02 – Workflows](02-workflows.md) | Freigaben, Routing, Quality Gates, Recovery und Git als Mermaid-Diagramme |
+| [03 – Runtime-Integration](03-runtime-integration.md) | Claude Code, Codex und Ollama mit Agent-Harness |
+| [04 – Praxisbeispiele](04-praxisbeispiele.md) | Frameworkunabhängige Szenarien |
+| [05 – Sicherheit und Qualität](05-sicherheit-qualitaet.md) | Berechtigungen, Prüfungen und Grenzen |
+| [06 – Interviewentscheidungen](06-session-entscheidungen.md) | Grill-me-Beschlüsse D-01 bis D-11 |
+| [07 – Troubleshooting](07-troubleshooting.md) | Instructions werden nicht geladen, Konflikte, fehlende Tools |
+| [08 – Veröffentlichung](08-publication-checklist.md) | Datenschutz und Historienprüfung vor einem Public-Release |
+| [09 – Dateien kopieren](09-dateien-kopieren.md) | Praktische Anwendung in bestehenden und neuen Projekten |
 
 ```mermaid
-flowchart LR
-    U["Benutzer: Auftrag + Freigabe"] --> CORE["Universal Core Policy"]
-    CORE --> RT["Runtime-Adapter"]
-    RT --> A["Claude Code"]
-    RT --> B["Codex"]
-    RT --> C["Ollama + Harness"]
-    PROJECT["Projekt-eigener Stack und Tests"] -. "Nicht vom Kit vorgegeben" .-> RT
-    A --> G["Quality Gates + Git"]
-    B --> G
-    C --> G
+flowchart TD
+    RULES["AGENTS.md: universelle Guidelines"] --> C["Codex"]
+    RULES --> IMPORT["CLAUDE.md mit @AGENTS.md"]
+    IMPORT --> CLAUDE["Claude Code"]
+    RULES --> H["Agent-Harness lädt Instructions"]
+    H --> O["Ollama-Modell"]
+    P["Projekt-eigene Regeln"] -. "Ergänzen" .-> RULES
+    C --> G["Tools / Quality Gates / Git"]
+    CLAUDE --> G
+    H --> G
 ```
 
-**Merke:** Die Policy ist keine Sandbox. Berechtigungen und Tool-Aufrufe müssen von der jeweiligen Runtime technisch kontrolliert werden. Das Kit wählt keinen Stack und installiert keine Frameworks.
+Eine Markdown-Anweisung ist keine technisch durchgesetzte Berechtigung. Der jeweilige Agent-Harness muss Toolrechte und Freigaben eigenständig kontrollieren.
