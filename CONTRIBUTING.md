@@ -14,7 +14,7 @@ Dieses Repository enthält sicherheitsrelevante Agent-Instruktionen. Änderungen
 ## Versionskonvention
 
 - **PATCH:** Klarstellungen und nicht brechende Fehlerkorrekturen.
-- **MINOR:** Neue optionale Profile/Adapter mit unveränderter Core-Sicherheitssemantik.
+- **MINOR:** Neue optionale Runtime-Adapter mit unveränderter Core-Sicherheitssemantik.
 - **MAJOR:** Änderungen an Policy-Invarianten, Freigaben oder deren Kompatibilitätsvertrag.
 
 ## Grenzen

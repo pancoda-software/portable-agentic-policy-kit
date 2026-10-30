@@ -67,7 +67,7 @@ Im Fehlerfall dürfen Agenten **nicht** automatisch User-Änderungen löschen od
 
 - Der Generator konfiguriert keine OS-/Container-Sandbox und keine Authentifizierung bei GitHub.
 - Der Validator beweist nur Struktur, Policy-Invarianten und generierten Dateigleichstand; nicht Modellgehorsam.
-- `agent-verify.sh` ist keine allgemeine Testplattform für Python, Go und Rust, sondern eine npm-orientierte Vorlage.
+- `agent-verify.sh` ist ein frameworkneutraler Zusatzcheck. Tests/Build/Lint werden nicht automatisch erkannt; für MEDIUM/HIGH ist ein explizit konfigurierter Testbefehl und dessen Ausführungsfreigabe erforderlich.
 - Automatische Budget-Durchsetzung über mehrere Modelle und Sessions verlangt einen externen Controller.
 - Berechtigungsmechanismen der Runtime müssen selbst geprüft werden, bevor autonome Operationen erlaubt werden.
 

@@ -5,10 +5,5 @@ Language: {{OUTPUT_LANGUAGE}}
 
 {{CORE_POLICY}}
 
----
-
-## Applied project profile: {{PROFILE_NAME}}
-
-{{PROJECT_PROFILE}}
 
 <!-- End generated agent instructions -->

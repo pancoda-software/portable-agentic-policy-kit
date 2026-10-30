@@ -2,7 +2,7 @@
 
 ## `validate.py` meldet „Drift detected“
 
-Generierte `AGENTS.md`, `CLAUDE.md` oder `ollama-system.txt` unterscheiden sich von der kanonischen Vorlage. Manuelle Änderungen nicht blind überschreiben. Erst Diff ansehen und entscheiden, ob die Änderung in die Core-Policy oder das Projektprofil gehört. Anschließend einen **neuen Ausgabeordner** rendern; `--force` nur auf zweifelsfrei vom Generator erzeugte Dateien anwenden.
+Generierte `AGENTS.md`, `CLAUDE.md` oder `ollama-system.txt` unterscheiden sich von der kanonischen Vorlage. Manuelle Änderungen nicht blind überschreiben. Erst Diff ansehen und entscheiden, ob die Änderung in die Core-Policy oder die eigenen Projektanweisungen gehört. Anschließend einen **neuen Ausgabeordner** rendern; `--force` nur auf zweifelsfrei vom Generator erzeugte Dateien anwenden.
 
 ## `render.py` verweigert eine Dateiüberschreibung
 
@@ -26,7 +26,7 @@ In manchen Sandbox-Einstellungen ist `.git` nicht beschreibbar. Der Agent darf d
 
 ## `agent-verify.sh` meldet fehlende Tests
 
-Bei MEDIUM/HIGH benötigt die npm-orientierte Vorlage ein `test`-Script. Fehlt es, wird der Check als FAIL/UNAVAILABLE ausgewiesen, nicht erfunden. Für Python-, Rust- oder andere Projekte geeignete eigene Quality Gates konfigurieren. Prüfe außerdem, ob Projekt-Skripte ungewollte Seiteneffekte haben.
+Bei MEDIUM/HIGH benötigt die frameworkunabhängige Vorlage einen in `.agentic/checks.json` definierten `test`-Befehl. Fehlt er oder wurde seine Ausführung nicht mit `--allow-checks` freigegeben, ist das Gate FAIL/UNAVAILABLE. Prüfe Projektbefehle und ihre Seiteneffekte vor der Freigabe.
 
 ## Was passiert bei bereits roten Tests?
 
@@ -44,6 +44,6 @@ D-02 erlaubt lokale Commits, aber ein Remote Push bzw. Merge benötigt eine konk
 
 1. [`README.md`](../README.md) lesen und Tests ausführen.
 2. [`docs/01-architektur.md`](01-architektur.md) und [`docs/02-workflows.md`](02-workflows.md) betrachten.
-3. Passendes Projektprofil wählen und in **neuen Ordner** rendern.
+3. Universelle Policy in einen neuen Ordner rendern oder mit `install.py` direkt integrieren.
 4. Laufzeitspezifische Sicherheitsmechanismen auf dem Zielsystem konfigurieren.
 5. In einem Wegwerf-Repository die Smoke-Tests aus [`03-runtime-integration.md`](03-runtime-integration.md) durchführen.

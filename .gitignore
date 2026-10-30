@@ -1,7 +1,5 @@
 __pycache__/
 *.py[cod]
-.agentic-state/
-dist/
-.coverage
-.env*
-!.env.example
+.DS_Store
+/dist/
+.venv/

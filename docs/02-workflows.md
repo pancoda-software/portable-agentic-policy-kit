@@ -17,7 +17,7 @@ flowchart TD
     GO -->|Ja| EXEC["Autonome, begrenzte Umsetzung"]
 ```
 
-**Beispiel:** „Ich möchte einen Session-Refresh in meiner Nuxt-App.“ Vor dem Go benennt der Agent Auth-Store, Backend-Endpunkt, UI-Feedback, Token-Handling und mögliche Race Conditions. Nach dem Go darf er nur den vereinbarten Umfang ändern.
+**Beispiel:** „Ich möchte eine bestehende Session-Erneuerung robuster machen.“ Vor dem Go benennt der Agent bestehende Session-Verantwortlichkeiten, Schnittstellen, Fehlerzustände und mögliche Race Conditions. Nach dem Go darf er nur den vereinbarten Umfang ändern.
 
 ## B. Capability-basiertes Modell- und Agentenrouting
 
@@ -95,7 +95,7 @@ flowchart TD
     HOST -->|Ja| RUN["Aktion ausführen und protokollieren"]
 ```
 
-`npm test` ist nicht automatisch ungefährlich: Ein Projekt kann beliebige Lifecycle-Skripte definiert haben. Neues oder unerwartetes Skriptverhalten muss vor der Ausführung geprüft werden.
+Ein bestehender Projekt-Testbefehl ist nicht automatisch ungefährlich: Ein Projekt kann beliebige Lifecycle-Skripte definiert haben. Neues oder unerwartetes Skriptverhalten muss vor der Ausführung geprüft werden.
 
 ## F. Git-Ablauf vom Arbeitsauftrag bis zur Versionierung
 
@@ -127,10 +127,10 @@ sequenceDiagram
 
 ```yaml
 task: TASK-42
-scope: "Nuxt Auth-Refresh"
+scope: "Session-Renewal Bugfix"
 result: completed
 checks:
-  vitest: PASS
+  targeted_tests: PASS
   typecheck: PASS
   lint: SKIPPED # mit dokumentierter Begründung
   build: UNAVAILABLE # nicht als PASS melden

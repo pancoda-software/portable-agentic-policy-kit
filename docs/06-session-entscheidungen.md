@@ -16,7 +16,7 @@ Dieses Kapitel dokumentiert die Ergebnisse des gemeinsamen Interviews als **nach
 | D-07 | **B – Risk-Adaptive Quality Gates** | Legacy-Baseline-Fehler sollen nicht pauschal blockieren | Reproduzierter Vorzustand, relevante Tests, Regressionen blockieren |
 | D-08 | **B – Bounded Adaptive Recovery** | Endloses Debugging begrenzen | Zwei lokale, ein eskalierter Fix je Ursache |
 | D-09 | **B – Layered Security** | Policy alleine ist keine Sandbox | Permissions + technische Durchsetzung + Fail-Closed |
-| D-10 | **B – Three-Layer Architecture** | Portabilität bei minimaler Dopplung | Core + Runtime-Adapter + Projektprofil |
+| D-10 | **B – Three-Layer Architecture** | Portabilität bei minimaler Dopplung | Core + Runtime-Adapter + projekt-eigene Instructions |
 | D-11 | **B – Portable Policy Kit** | Nutzbares Paket ohne neues Agenten-Framework | Renderer, Validator, Vorlagen, Tests, Docs |
 
 ## Was bewusst **nicht** beschlossen wurde
@@ -27,7 +27,7 @@ Dieses Kapitel dokumentiert die Ergebnisse des gemeinsamen Interviews als **nach
 - Kein stillschweigender Cloud-Provider- oder Bezahlwechsel.
 - Keine Garantie, dass das Ollama-Modell selbst Tool-Security bereitstellt.
 - Kein automatischer Git Push oder Merge durch die Ausführungsfreigabe.
-- Kein Framework-Zwang für alle Projektarten; Nuxt ist nur im passenden Profil relevant.
+- Keine Framework-/Sprachvorgaben: Technologieentscheidungen liegen ausschließlich beim Zielprojekt.
 
 ## Sichere Defaults der V1
 
@@ -41,7 +41,7 @@ Dieses Kapitel dokumentiert die Ergebnisse des gemeinsamen Interviews als **nach
 | Automatischer bezahlter Provider-Wechsel | false | D-04/D-05/D-09 |
 | Dependency-Installation ohne Approval | false | D-09 |
 
-Die Defaults können nur durch eine bewusst dokumentierte, zulässige Änderung weiterentwickelt werden. Ein Projektprofil darf Sicherheit und Freigaben nicht einfach lockern.
+Die Defaults können nur durch eine bewusst dokumentierte, zulässige Änderung weiterentwickelt werden. Projekt-eigene Regeln dürfen Sicherheit und Freigaben nicht eigenmächtig lockern.
 
 ## Entwicklung vom ursprünglichen Prompt zum Kit
 
@@ -50,7 +50,7 @@ flowchart LR
     ORIG["Ursprünglicher Prompt\nstarre Regeln"] --> GRILL["11 Grill-me-Runden\nEntscheidungen D-01...D-11"]
     GRILL --> CORE["Universal Core Policy"]
     CORE --> AD["Runtime Adapter"]
-    CORE --> PR["Projektprofile"]
+    CORE --> PR["Projekt-eigene Regeln"]
     AD --> KIT["Versioniertes Policy Kit"]
     PR --> KIT
     KIT --> TEST["Validator + Tests + Review"]

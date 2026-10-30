@@ -1,19 +1,55 @@
 {
   "schema": 1,
-  "version": "1.0.0",
+  "version": "1.2.0",
   "decisions": {
-    "D-01": {"option": "B", "name": "Risk-Based Autonomy"},
-    "D-02": {"option": "B", "name": "Autonomous Local Commits"},
-    "D-03": {"option": "B", "name": "Adaptive Delegation"},
-    "D-04": {"option": "A", "name": "Claude Desktop Code Tab as primary runtime"},
-    "D-04a": {"option": "Multi-Provider", "name": "Claude Code, Codex, Ollama harnesses"},
-    "D-05": {"option": "B", "name": "Capability-Based Adaptive Routing"},
-    "D-06": {"option": "B", "name": "Tiered Skill Enforcement"},
-    "D-07": {"option": "B", "name": "Risk-Adaptive Quality Gates"},
-    "D-08": {"option": "B", "name": "Bounded Adaptive Recovery"},
-    "D-09": {"option": "B", "name": "Layered Security"},
-    "D-10": {"option": "B", "name": "Three-Layer Architecture"},
-    "D-11": {"option": "B", "name": "Portable Policy Kit"}
+    "D-01": {
+      "option": "B",
+      "name": "Risk-Based Autonomy"
+    },
+    "D-02": {
+      "option": "B",
+      "name": "Autonomous Local Commits"
+    },
+    "D-03": {
+      "option": "B",
+      "name": "Adaptive Delegation"
+    },
+    "D-04": {
+      "option": "A",
+      "name": "Claude Desktop Code Tab as primary runtime"
+    },
+    "D-04a": {
+      "option": "Multi-Provider",
+      "name": "Claude Code, Codex, Ollama harnesses"
+    },
+    "D-05": {
+      "option": "B",
+      "name": "Capability-Based Adaptive Routing"
+    },
+    "D-06": {
+      "option": "B",
+      "name": "Tiered Skill Enforcement"
+    },
+    "D-07": {
+      "option": "B",
+      "name": "Risk-Adaptive Quality Gates"
+    },
+    "D-08": {
+      "option": "B",
+      "name": "Bounded Adaptive Recovery"
+    },
+    "D-09": {
+      "option": "B",
+      "name": "Layered Security"
+    },
+    "D-10": {
+      "option": "B",
+      "name": "Three-Layer Architecture"
+    },
+    "D-11": {
+      "option": "B",
+      "name": "Portable Policy Kit"
+    }
   },
   "defaults": {
     "local_retries_per_cause": 2,

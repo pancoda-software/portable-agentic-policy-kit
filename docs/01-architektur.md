@@ -1,77 +1,59 @@
-# 01 – Architektur und Verantwortlichkeiten
+# 01 – Frameworkunabhängige Architektur
 
-## Das Problem, das dieses Kit löst
+Das Kit behandelt **Agentenverhalten** und nicht Projektarchitektur. Es kennt keine bevorzugte Sprache, keine Framework-Pflicht und keine Annahmen über Build-System, UI-Library oder Datenbank. Diese Entscheidungen gehören dem jeweiligen Projekt.
 
-Eine einzige riesige Custom-Instruction-Datei vermischt häufig persönliche Verhaltensregeln, konkrete Framework-Versionen, runtime-spezifische Kommandos und Sicherheitsberechtigungen. Das ist redundant, teuer im Kontextverbrauch und zwischen Claude Code, Codex und lokalen Modellen schwer portierbar.
-
-Die gewählte **Three-Layer Architecture (D-10)** trennt diese Interessen. Der Universal Core ist die maßgebliche Policy-Quelle; Projekt- und Runtime-Regeln ergänzen ihn, ohne ihn heimlich zu lockern.
+## Drei Ebenen – ohne Technologieprofile
 
 ```mermaid
 flowchart TB
-    subgraph SOURCE["Kanonische Quellen im Kit"]
-       CORE["policy/core.md\nFreigabe, Git, Routing, Recovery, Security"]
-       DEC["policy/decisions.yaml\nVersion und Defaults"]
-       PROF["policy/profiles/*.md\nNuxt/Vue oder generic"]
-       SKILLS["policy/skill-registry.yaml"]
+    subgraph KIT["Portables Policy Kit"]
+       CORE["policy/core.md\nFreigabe · Security · Routing · Git · Recovery"]
+       DEC["policy/decisions.yaml\nSichere Grenzwerte"]
+       REG["policy/skill-registry.yaml\nDiscovery-Hinweise"]
     end
-    CORE --> RENDER["tooling/render.py"]
-    DEC --> VALID["tooling/validate.py"]
-    PROF --> RENDER
-    SKILLS --> VALID
-    RENDER --> AGENTS["AGENTS.md"]
-    RENDER --> CLAUDE["CLAUDE.md"]
-    RENDER --> OLLAMA["ollama-system.txt"]
-    AGENTS --> CODEX["Codex"]
-    CLAUDE --> CC["Claude Code"]
-    OLLAMA --> OH["Ollama Agent-Harness"]
-    VALID -. "prüft Drift und Invarianten" .-> AGENTS
+    CORE --> RENDER["Deterministischer Renderer"]
+    DEC --> VALID["Validator"]
+    REG --> VALID
+    RENDER --> A["AGENTS.md"]
+    RENDER --> C["CLAUDE.md"]
+    RENDER --> O["Ollama-System-Prompt"]
+    A --> CODEX["Codex"]
+    C --> CLAUDE["Claude Code"]
+    O --> HARNESS["Ollama-Agent-Harness"]
+    PROJECT["Projekt-eigene Regeln und Tests\naußerhalb des Kit-Blocks"] -.-> A
+    PROJECT -.-> C
+    VALID -.-> A
 ```
 
-## Layer 1 – Universal Core
+**Layer 1 – Universal Core:** alle D-01–D-11-Entscheidungen. Die Quelltexte enthalten nur provider- und technologieübergreifende Leitplanken.
 
-In [`policy/core.md`](../policy/core.md) stehen ausschließlich übertragbare Anweisungen. Beispiele: **zuerst Scope genehmigen**, dann im genehmigten Rahmen arbeiten; Git Push/Merge nur nach Freigabe; keine stillschweigende kostenpflichtige Cloud-Eskalation; Fehlerbehebung mit festem Retry-Budget. Die tatsächlichen Grenzwerte sind in [`policy/decisions.yaml`](../policy/decisions.yaml) festgehalten.
+**Layer 2 – Runtime-Adapter:** Einbindung in die unterstützten Instructions-Formate. Der Adapter selbst kann Sandbox, Permissions oder Tool Calling nicht aktivieren; das geschieht in der jeweiligen Laufzeit.
 
-## Layer 2 – Runtime-Adapter
+**Layer 3 – Projekt-eigene Konventionen:** bestehen separat in den bereits vorhandenen Dateien des Projekts. Das Kit installiert kein Projektprofil und erkennt keinen Stack. Diese dritte Ebene liegt **außerhalb des Kits** und darf Security-/Approval-Regeln nicht abschwächen.
 
-Runtime-Adapter verbinden die Regeltexte mit den Lademöglichkeiten einer konkreten Umgebung. Claude Code kann `CLAUDE.md` nutzen, Codex `AGENTS.md`; ein Ollama-Harness muss den generierten System-Prompt an sein Modell übergeben. **Der Adapter beschreibt nicht dieselbe Policy nochmals von Hand.** Tool-Rechte, Hooks und Isolation sind je Runtime gesondert zu konfigurieren.
-
-## Layer 3 – Projektprofile
-
-Ein Nuxt-Projekt benötigt andere Tech-Stack-Konventionen als ein Python-Projekt. Projektprofile tragen die technischen Vorgaben und lokale Testbefehle. `nuxt-vue` bevorzugt Nuxt UI, Tailwind, Pinia für tatsächlich geteilten Domain-State und Vitest für passende Tests. `generic` enthält keine Nuxt-Pflicht. Ein Projektscope darf die Sicherheitsregeln nicht abschwächen.
-
-## Rollen- und Entscheidungsgrenzen
+## Autonomie und Verantwortung
 
 ```mermaid
 flowchart TD
-    U["User: Ziel, Scope, Risikoakzeptanz"] -->|"Initiales Go"| MAIN["Hauptagent: Plan, Routing, Integration"]
+    U["User definiert Scope + Go"] --> MAIN["Hauptagent bewertet Schwierigkeit und Risiko"]
     MAIN --> D{"Delegation bringt Vorteil?"}
     D -->|Nein| SELF["Direkte Implementierung"]
-    D -->|Ja| SUB["Spezialisierter Sub-Agent\nenger Scope, minimale Rechte"]
-    SELF --> GATE["Deterministische Quality Gates"]
-    SUB --> GATE
-    GATE -->|PASS| COMMIT["Lokaler Conventional Commit"]
-    GATE -->|FAIL| TRIAGE["Begrenzte Fehlerbehebung"]
-    COMMIT --> RPT["Abschlussbericht"]
-    RPT --> PUSH{"Push oder Merge nötig?"}
-    PUSH -->|Ja| U
-    PUSH -->|Nein| DONE["Lokaler Abschluss"]
+    D -->|Ja| SUB["Isolierter Sub-Agent"]
+    SELF --> Q["Projekt-eigene Quality Gates + Scope-Prüfung"]
+    SUB --> Q
+    Q -->|PASS| COMMIT["Lokaler Conventional Commit"]
+    Q -->|FAIL| FIX["Bounded Recovery"]
+    FIX --> Q
+    COMMIT --> R["Rapport"]
+    R --> REMOTE{"Push oder Merge?"}
+    REMOTE -->|Ja| U
+    REMOTE -->|Nein| DONE["Lokaler Abschluss"]
 ```
 
-Die Freigabe für einen Implementierungsauftrag bedeutet **nicht**, dass alle möglichen Subaktionen erlaubt sind. Das Hauptmodell trägt die Integrationsverantwortung. Sub-Agenten bekommen keine zusätzlichen Rechte durch ihren Modelltyp.
+## Capability-Based Routing
 
-## Modell-Routing ist absichtlich abstrakt
+LIGHT bedeutet mechanische Routine, BALANCED Standard-Coding, DEEP schwierige Architektur oder Debugging. Dies sind **Leistungsprofile für Modelle**, nicht Programmiersprachen- oder Projektprofile. CRITICAL ist eine unabhängige Risikoflagge. Ein teures Modell bekommt nicht automatisch weitreichendere Berechtigungen.
 
-- **LIGHT** für Routine und mechanische Aufgaben.
-- **BALANCED** für Standard-Coding, gezielte Tests und Debugging.
-- **DEEP** für Architekturkonflikte, anspruchsvolle Refactorings, schwierige Fehler.
-- **CRITICAL** ist eine Risikokennzeichnung, **kein Modellname oder Performance-Tier**.
+## Versionierung und Drift
 
-Ein lokales Modell kann BALANCED nur dann erhalten, wenn Tool-Aufrufe, Kontextlänge und Ergebnisqualität für den betreffenden Task ausreichen. Kein automatischer Modellwechsel wird behauptet, wenn die Runtime ihn nicht unterstützt.
-
-## Single Source of Truth und Policy-Drift
-
-`render.py` erzeugt die verschiedenen Entry-Points aus denselben Eingaben. `validate.py --generated ...` vergleicht den erzeugten Inhalt mit dem erwarteten Inhalt und meldet Unterschiede. Dadurch werden versehentliche Bearbeitungen der generierten Policy sichtbar. Die Prüfung garantiert **nicht**, dass eine Runtime diese Datei auch wirklich geladen hat; dazu dient ein [Smoke-Test](03-runtime-integration.md#smoke-tests).
-
-## Grenzen des Designs
-
-Das Kit ist **kein Orchestrator**: Es startet keine Agenten, zählt Rechenzeit nicht zuverlässig und kann ohne externen Controller nicht verhindern, dass ein Modell ein Retry-Limit missachtet. Diese Aspekte werden als Requirements für den jeweiligen Harness definiert.
+`render.py` erzeugt alle Runtime-Texte aus `core.md`. `validate.py` erkennt Änderungen gegenüber der kanonischen Vorlage. Der Installer verwaltet nur explizit gekennzeichnete Blöcke in `AGENTS.md` und `CLAUDE.md`; andere Projektregeln bleiben bestehen. Der User muss vor der Ausführung verifizieren, dass die jeweilige Runtime die Policy tatsächlich geladen hat.

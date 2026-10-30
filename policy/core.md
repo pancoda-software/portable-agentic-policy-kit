@@ -81,8 +81,8 @@
 
 ## 11 · D-10/D-11 Three-layer delivery
 
-- One canonical universal core; runtime adapters contain only integration mechanisms; project profiles contain stack rules. Apply the most restrictive applicable rule.
-- Generate portable entry points from canonical sources; do not manually maintain divergent copies. Explicitly verify instructions are loaded by the target runtime.
+- One canonical universal core; runtime adapters contain only integration mechanisms; any technology-specific rules belong solely to user-owned project instructions outside managed blocks. Apply the most restrictive applicable rule.
+- Do not choose, infer, prescribe or promote a particular framework, programming language, UI library, database or testing tool. Respect the existing project and use its declared commands only after review. Generate portable entry points from canonical sources; do not manually maintain divergent copies. Explicitly verify instructions are loaded by the target runtime.
 - Keep configuration and validators versioned, inspectable and deterministic. Neither the validator nor a policy document replaces a sandbox or a real integration test.
 
 ## 12 · Completion contract

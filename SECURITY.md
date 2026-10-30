@@ -23,7 +23,7 @@ This is a **policy distribution and validation kit**, not an agent harness or OS
 
 - `agent-verify.sh` does NOT enforce an operating-system sandbox, Git write permissions, push protection, or task scope.
 - It does not examine untracked file content and does not fully detect obfuscated, encrypted or novel secrets. Use dedicated scanning and review in real projects.
-- Npm project scripts are arbitrary code; `--allow-project-scripts` signals prior human/tool review, not a security guarantee.
+- Project-provided check commands are arbitrary executables; `--allow-checks` signals explicit prior review, not a security guarantee.
 - Existing test failures require separate pre-change reproduction; no automatic baseline adjudication is implemented.
 - `tooling/validate.py` verifies static consistency and optionally common local skill paths. It does not prove remote repository availability, model competence, tool enforcement or installed versions.
 - Retry budgets and sub-agent parallelism are specified as normative policy, not mechanically enforced by this kit. Hard enforcement needs an external trusted controller.

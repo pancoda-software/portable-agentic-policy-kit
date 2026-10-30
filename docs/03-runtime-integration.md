@@ -1,5 +1,9 @@
 # 03 – Runtime-Integration: Claude Code, Codex und Ollama
 
+## Schnellinstallation (empfohlen)
+
+Ein einzelner Befehl genügt, wenn das Kit bereits geklont wurde: `python3 /pfad/zum/kit/tooling/install.py --project .`. Neu: `--new projektname`. Detaillierte Varianten (privates GitHub-Repo, späterer Public-Bootstrap und Updates) stehen in [Einfach installieren](09-einfach-installieren.md). Die darunter beschriebene Render-/Copy-Methode bleibt als manueller Expertenworkflow verfügbar.
+
 ## Erstinstallation und Workflow
 
 ```bash
@@ -16,7 +20,7 @@ python3 tooling/validate.py --config templates/project.yaml --generated ./dist/e
 
 ```mermaid
 flowchart LR
-    CORE["core + decisions + profile"] --> RENDER["render.py"]
+    CORE["core + runtime adapter"] --> RENDER["render.py"]
     RENDER --> A["AGENTS.md"]
     RENDER --> C["CLAUDE.md"]
     RENDER --> O["ollama-system.txt"]
@@ -33,7 +37,7 @@ flowchart LR
 3. Native Permissions, Hook-Skripte, Sandbox und optionale Sub-Agent-Definitionen gesondert konfigurieren. Die Markdown-Datei ist **keine Tool-Allowlist**.
 4. Lokale Commits nur nach relevanten Quality Gates. Für Push und Merge separate Freigabe.
 
-Für macOS und Linux dieselben Policy-Dateien verwenden; lokale Tool-Pfade und Package-Manager bleiben projektspezifisch.
+Für macOS und Linux dieselben Policy-Dateien verwenden; projekt-eigene Befehle bleiben ausdrücklich außerhalb der Policy.
 
 ## Codex
 

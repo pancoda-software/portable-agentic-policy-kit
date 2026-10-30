@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "checks": {
+    "test": ["path-to-test-command", "arg1"],
+    "lint": ["path-to-lint-command", "arg1"]
+  }
+}

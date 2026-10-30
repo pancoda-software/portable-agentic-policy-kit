@@ -5,8 +5,3 @@ Respond in {{OUTPUT_LANGUAGE}} by default. This prompt guides the MODEL ONLY. Al
 
 {{CORE_POLICY}}
 
----
-
-## Project profile: {{PROFILE_NAME}}
-
-{{PROJECT_PROFILE}}
